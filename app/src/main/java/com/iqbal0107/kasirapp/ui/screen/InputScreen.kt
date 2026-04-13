@@ -2,6 +2,8 @@ package com.iqbal0107.kasirapp.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
@@ -35,8 +37,13 @@ fun InputScreen(navController: NavHostController) {
     val pajak = subtotal * 0.1
     val total = subtotal + pajak
 
-    // 🔥 FORMAT TANPA FUNCTION GLOBAL (ANTI ERROR)
-    val format = NumberFormat.getNumberInstance(Locale("in", "ID")).apply {
+    // 🔥 FORMAT RUPIAH TANPA WARNING
+    val localeID = Locale.Builder()
+        .setLanguage("id")
+        .setRegion("ID")
+        .build()
+
+    val format = NumberFormat.getNumberInstance(localeID).apply {
         maximumFractionDigits = 0
     }
 
@@ -63,7 +70,9 @@ fun InputScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()), // 🔥 FIX SCROLL
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
