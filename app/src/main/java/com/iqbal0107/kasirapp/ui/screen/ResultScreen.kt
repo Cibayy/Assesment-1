@@ -17,6 +17,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.iqbal0107.kasirapp.R
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+// 🔥 FORMAT RUPIAH (FIX NO WARNING)
+fun formatRupiah(angka: Double): String {
+    val localeID = Locale.Builder()
+        .setLanguage("id")
+        .setRegion("ID")
+        .build()
+
+    val format = NumberFormat.getNumberInstance(localeID)
+    format.maximumFractionDigits = 0
+
+    return "Rp ${format.format(angka)}"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +47,17 @@ fun ResultScreen(
 ) {
 
     val context = LocalContext.current
+
+    // 🔥 TANGGAL OTOMATIS
+    val localeID = Locale.Builder()
+        .setLanguage("id")
+        .setRegion("ID")
+        .build()
+
+    val currentDate = SimpleDateFormat(
+        "dd MMM yyyy HH:mm",
+        localeID
+    ).format(Date())
 
     Scaffold(
         topBar = {
@@ -74,18 +102,31 @@ fun ResultScreen(
 
                 Text("STRUK PEMBAYARAN", fontWeight = FontWeight.Bold)
 
+                // 🔥 TANGGAL MUNCUL DI SINI
+                Text(
+                    "Tanggal: $currentDate",
+                    style = MaterialTheme.typography.bodySmall
+                )
+
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
 
-                Text("Total: $total")
-                Text("Pajak: $pajak")
-                Text("Bayar: $bayar")
-                Text("Kembalian: $kembalian")
+                Text("Total: ${formatRupiah(total.toDouble())}")
+                Text("Pajak: ${formatRupiah(pajak.toDouble())}")
+                Text("Bayar: ${formatRupiah(bayar.toDouble())}")
+                Text("Kembalian: ${formatRupiah(kembalian.toDouble())}")
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
 
                 Button(
                     onClick = {
-                        val text = "Total: $total\nBayar: $bayar\nKembalian: $kembalian"
+                        val text = """
+STRUK PEMBAYARAN
+Tanggal: $currentDate
+
+Total: ${formatRupiah(total.toDouble())}
+Bayar: ${formatRupiah(bayar.toDouble())}
+Kembalian: ${formatRupiah(kembalian.toDouble())}
+                        """.trimIndent()
 
                         val intent = Intent(Intent.ACTION_SEND)
                         intent.type = "text/plain"
