@@ -3,12 +3,16 @@ package com.iqbal0107.kasirapp.ui.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.iqbal0107.kasirapp.Item
@@ -26,7 +30,6 @@ fun InputScreen(navController: NavHostController) {
 
     var metode by remember { mutableStateOf("") }
     var bayar by remember { mutableStateOf("") }
-
     var errorMessage by remember { mutableStateOf("") }
 
     val subtotal = listBarang.sumOf { it.harga * it.jumlah }
@@ -35,7 +38,24 @@ fun InputScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Kasir App") })
+            TopAppBar(
+                title = { Text("Kasir App") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF5C6BC0),
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate("about")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Tentang Aplikasi"
+                        )
+                    }
+                }
+            )
         }
     ) { padding ->
 
@@ -47,14 +67,22 @@ fun InputScreen(navController: NavHostController) {
         ) {
 
             item {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_toko),
-                    contentDescription = null,
-                    modifier = Modifier.size(120.dp)
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_toko),
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp)
+                    )
+                }
             }
 
-            // 🔹 INPUT
+            item {
+                Text("Input Barang", fontWeight = FontWeight.Bold)
+            }
+
             item {
                 OutlinedTextField(
                     value = nama,
@@ -82,15 +110,15 @@ fun InputScreen(navController: NavHostController) {
                 )
             }
 
-            // 🔥 TAMBAH BARANG
             item {
                 Button(
                     onClick = {
                         try {
-                            val h = harga.toDouble()
-                            val j = jumlah.toDouble()
-
-                            listBarang = listBarang + Item(nama, h, j)
+                            listBarang = listBarang + Item(
+                                nama,
+                                harga.toDouble(),
+                                jumlah.toDouble()
+                            )
 
                             nama = ""
                             harga = ""
@@ -98,7 +126,7 @@ fun InputScreen(navController: NavHostController) {
                             errorMessage = ""
 
                         } catch (e: Exception) {
-                            errorMessage = "Input tidak valid!"
+                            errorMessage = "Input harus angka!"
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -107,24 +135,47 @@ fun InputScreen(navController: NavHostController) {
                 }
             }
 
-            // 🔥 LIST BARANG
-            items(listBarang) { item ->
-                Text("${item.nama} - ${item.harga} x ${item.jumlah}")
-            }
-
-            // 🔥 TOTAL
             if (listBarang.isNotEmpty()) {
+
                 item {
-                    Text("Subtotal: $subtotal")
-                    Text("Pajak: $pajak")
-                    Text("Total: $total")
+                    Text("Daftar Barang", fontWeight = FontWeight.Bold)
                 }
 
-                // 🔹 METODE
-                item {
-                    Text("Metode Pembayaran")
+                itemsIndexed(listBarang) { index, item ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(3.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("${index + 1}. ${item.nama}", fontWeight = FontWeight.Bold)
+                            Text("Harga: ${item.harga}")
+                            Text("Jumlah: ${item.jumlah}")
+                            Text("Total: ${item.harga * item.jumlah}")
+                        }
+                    }
+                }
 
-                    Row {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("Ringkasan", fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Text("Subtotal: $subtotal")
+                            Text("Pajak (10%): $pajak")
+                            Text("Total: $total", fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                item {
+                    Text("Metode Pembayaran", fontWeight = FontWeight.Bold)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = metode == "Cash",
                             onClick = { metode = "Cash" }
@@ -141,8 +192,8 @@ fun InputScreen(navController: NavHostController) {
                     }
                 }
 
-                // 🔹 CASH
                 if (metode == "Cash") {
+
                     item {
                         OutlinedTextField(
                             value = bayar,
@@ -157,6 +208,7 @@ fun InputScreen(navController: NavHostController) {
                             onClick = {
                                 try {
                                     val b = bayar.toDouble()
+
                                     if (b < total) {
                                         errorMessage = "Uang kurang!"
                                         return@Button
@@ -165,11 +217,11 @@ fun InputScreen(navController: NavHostController) {
                                     val kembalian = b - total
 
                                     navController.navigate(
-                                        "result/MultiItem/$total/$b/$kembalian/$pajak"
+                                        "result/Multi/$total/$b/$kembalian/$pajak"
                                     )
 
                                 } catch (e: Exception) {
-                                    errorMessage = "Input salah!"
+                                    errorMessage = "Input bayar salah!"
                                 }
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -179,8 +231,8 @@ fun InputScreen(navController: NavHostController) {
                     }
                 }
 
-                // 🔥 QRIS
                 if (metode == "QRIS") {
+
                     item {
                         Image(
                             painter = painterResource(id = R.drawable.qris),
@@ -193,7 +245,7 @@ fun InputScreen(navController: NavHostController) {
                         Button(
                             onClick = {
                                 navController.navigate(
-                                    "result/MultiItem/$total/$total/0/$pajak"
+                                    "result/Multi/$total/$total/0/$pajak"
                                 )
                             },
                             modifier = Modifier.fillMaxWidth()
