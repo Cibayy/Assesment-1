@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Kasir App</string>
+
+    <string name="title_input">Input Data</string>
+    <string name="title_result">Struk Pembayaran</string>
+
+    <string name="nama_barang">Nama Barang</string>
+    <string name="harga">Harga</string>
+    <string name="jumlah">Jumlah</string>
+    <string name="bayar">Uang Dibayar</string>
+
+    <string name="hitung">Hitung</string>
+    <string name="total">Total</string>
+    <string name="pajak">Pajak</string>
+    <string name="kembalian">Kembalian</string>
+
+    <string name="error">Input tidak valid</string>
+    <string name="share">Bagikan</string>
+</resources>

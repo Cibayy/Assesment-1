@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Cashier App</string>
+
+    <string name="title_input">Input Data</string>
+    <string name="title_result">Payment Receipt</string>
+
+    <string name="nama_barang">Item Name</string>
+    <string name="harga">Price</string>
+    <string name="jumlah">Quantity</string>
+    <string name="bayar">Paid Amount</string>
+
+    <string name="hitung">Calculate</string>
+    <string name="total">Total</string>
+    <string name="pajak">Tax</string>
+    <string name="kembalian">Change</string>
+
+    <string name="error">Invalid input</string>
+    <string name="share">Share</string>
+</resources>
